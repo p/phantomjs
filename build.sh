@@ -20,14 +20,18 @@ elif [[ $OSTYPE = darwin* ]]; then
    # hyperthreaded dual-core CPU.
    COMPILE_JOBS=4
 else
-   CPU_CORES=`grep -c ^processor /proc/cpuinfo`
-   if [[ "$CPU_CORES" -gt 1 ]]; then
-       COMPILE_JOBS=$CPU_CORES
-       if [[ "$COMPILE_JOBS" -gt 8 ]]; then
-           # Safety net.
-           COMPILE_JOBS=8
-       fi
-   fi
+    if test -f /proc/cpuinfo; then
+        CPU_CORES=`grep -c ^processor /proc/cpuinfo`
+        if [[ "$CPU_CORES" -gt 1 ]]; then
+            COMPILE_JOBS=$CPU_CORES
+            if [[ "$COMPILE_JOBS" -gt 8 ]]; then
+                # Safety net.
+                COMPILE_JOBS=8
+            fi
+        fi
+    else
+        COMPILE_JOBS=2
+    fi
 fi
 
 until [ -z "$1" ]; do
